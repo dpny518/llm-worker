@@ -366,6 +366,21 @@ wrangler secret put LLM_API_KEY
 wrangler deploy
 ```
 
+## GitHub Deploy
+This repo includes a GitHub Actions workflow at [.github/workflows/deploy.yml](/Users/dhonampemba/Development/llm-gateway/.github/workflows/deploy.yml) that deploys on pushes to `main` or manual runs.
+
+Required GitHub repository secrets:
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+- `LLM_API_KEY`
+
+What the workflow does:
+- installs dependencies
+- writes `LLM_API_KEY` to the Worker with `wrangler secret put`
+- runs `wrangler deploy`
+
+If you want GitHub to be the only deployment path, you can skip local `wrangler login` and deploy directly from the workflow.
+
 ## Publishing As A Template
 Use your own values for deployment and secrets. Do not commit `.env`, `.dev.vars`, or bearer tokens.
 
