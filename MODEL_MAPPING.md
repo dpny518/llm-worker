@@ -12,9 +12,9 @@ Map OpenAI and Anthropic Claude models to the closest Cloudflare-hosted equivale
 
 | OpenAI Model | Cloudflare Model | Match | Notes |
 |---|---|---|---|
-| `gpt-5.6-sol` | `kimi-k2.7-code` | 🔵 | Both frontier-class. Sol is stronger but K2.7 is the closest Cloudflare-hosted option |
-| `gpt-5.6-terra` | `glm-5.2` | 🔵 | Agentic coding — GLM-5.2 is your coding + tool-use flagship |
-| `gpt-5.6-luna` | `llama-3.3-70b` | 🔵 | Cost-optimized, good for high-throughput workloads |
+| `gpt-5.6-sol` | `kimi-k2.7-code` | 🔵 | Both frontier-class. Sol is stronger but K2.7 is closest Cloudflare-hosted frontier coder |
+| `gpt-5.6-terra` | `kimi-k2.7-code` | 🔵 | Balanced intelligence/cost — K2.7 for coding + agentic work |
+| `gpt-5.6-luna` | `glm-5.2` | 🔵 | Cost-optimized — GLM-5.2 with coding + tool use |
 
 ### GPT-5.5 / GPT-5.4 Family
 
@@ -40,9 +40,9 @@ Map OpenAI and Anthropic Claude models to the closest Cloudflare-hosted equivale
 
 | OpenAI Model | Cloudflare Model | Match | Notes |
 |---|---|---|---|
-| `gpt-5.3-codex` | `glm-5.2` | 🔵 | Agentic coding — GLM-5.2 is Cloudflare-hosted coding + tool-calling flagship |
+| `gpt-5.3-codex` | `kimi-k2.7-code` | 🔵 | Most capable agentic coding — K2.7 is your strongest coder |
 | `gpt-5.2-codex` | `glm-5.2` | 🔵 | Long-horizon coding tasks |
-| `gpt-5.1-codex` | `glm-5.2` | 🔵 | Agentic coding — GLM-5.2 with function calling and reasoning |
+| `gpt-5.1-codex` | `glm-5.2` | 🔵 | Agentic coding with function calling |
 
 ### GPT-5 / GPT-4 Family (Legacy)
 
@@ -103,15 +103,15 @@ Map OpenAI and Anthropic Claude models to the closest Cloudflare-hosted equivale
 
 | Claude Model | Cloudflare Model | Match | Notes |
 |---|---|---|---|
-| `claude-fable-5` | `kimi-k2.7-code` | 🔵 | Both frontier — Claude stronger, K2.7 closest Cloudflare option |
-| `claude-mythos-5` | `kimi-k2.7-code` | 🔵 | Defensive cybersecurity — K2.7 as closest large frontier model |
+| `claude-fable-5` | `kimi-k2.7-code` | 🔵 | Both frontier — Claude stronger, K2.7 is closest 1T coder + agent |
+| `claude-mythos-5` | `kimi-k2.7-code` | 🔵 | Defensive cybersecurity — K2.7 as closest frontier agent |
 
 ### Opus Family (Most Capable)
 
 | Claude Model | Cloudflare Model | Match | Notes |
 |---|---|---|---|
-| `claude-opus-4-8` | `glm-5.2` | 🔵 | Complex agentic coding, enterprise — GLM-5.2 with tool calling + reasoning |
-| `claude-opus-4-7` | `glm-5.2` | 🔵 | Strong agentic coding — GLM-5.2 matching tool-use capability |
+| `claude-opus-4-8` | `kimi-k2.7-code` | 🔵 | Complex agentic coding, enterprise — K2.7 1T for top-tier agentic work |
+| `claude-opus-4-7` | `kimi-k2.7-code` | 🔵 | Strong agentic coding — K2.7 with function calling + vision |
 | `claude-opus-4-6` | `glm-5.2` | 🔵 | Complex multi-step work — GLM-5.2 with function calling |
 | `claude-opus-4-5` | `glm-5.2` | 🔵 | Reasoning, coding, agentic — GLM-5.2 covers this well |
 
@@ -119,7 +119,8 @@ Map OpenAI and Anthropic Claude models to the closest Cloudflare-hosted equivale
 
 | Claude Model | Cloudflare Model | Match | Notes |
 |---|---|---|---|
-| `claude-sonnet-5` | `glm-5.2` | 🔵 | Speed + intelligence, strong coding — GLM-5.2 matches this tier |
+| `claude-sonnet-5` | `kimi-k2.7-code` | 🔵 | Speed + intelligence, strong coding — K2.7 for fast agentic coding |
+| `claude-sonnet-4-6` | `glm-5.2` | 🔵 | Balanced coding/reasoning |
 | `claude-sonnet-4-6` | `glm-5.2` | 🔵 | Balanced coding/reasoning |
 | `claude-sonnet-4-5` | `llama-4-scout` | 🔵 | Best coding model of its generation |
 | `claude-sonnet-4` | `llama-3.3-70b` | 🔵 | Previous generation balanced |
@@ -182,7 +183,8 @@ const response = await fetch(`${WORKER_BASE_URL}/v1/chat/completions`, {
 | Priority | Use this Cloudflare model |
 |---|---|
 | **Maximum capability** | `kimi-k2.7-code` |
-| **Best coding / agentic** | `glm-5.2` |
+| **Best coding / agentic** | `kimi-k2.7-code` |
+| **Fast coding / tool use** | `glm-5.2` |
 | **Best reasoning** | `qwq-32b` / `deepseek-r1` |
 | **Best speed** | `llama-3.2-1b` / `llama-3.2-3b` |
 | **Best balance** | `llama-3.3-70b` / `llama-4-scout` |
