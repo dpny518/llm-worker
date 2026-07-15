@@ -1,4 +1,97 @@
-# LLM Worker API Documentation
+# LLM Worker — OpenAI-Compatible Cloudflare AI Gateway
+
+An OpenAI-compatible API gateway that proxies requests to Cloudflare Workers AI. Drop this into any OpenAI SDK by changing the `baseURL`, and your requests route to Cloudflare's hosted models.
+
+## Quick Start (Deploy in 5 Minutes)
+
+### 1. Create a Cloudflare Account
+Go to [dash.cloudflare.com/sign-up](https://dash.cloudflare.com/sign-up) and create a free account. No credit card required — Workers AI has a generous free tier.
+
+### 2. Create an API Token
+  1. Go to [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens)
+  2. Click **Create Token** → Use the **Edit Cloudflare Workers** template
+  3. Under **Account Resources**, select your account
+  4. Under **Zone Resources**, select **All zones**
+  5. Click **Continue to summary** → **Create Token**
+  6. Copy the token — you won't see it again
+
+### 3. Install Wrangler CLI
+```bash
+npm install -g wrangler
+```
+
+### 4. Connect Wrangler to Your Cloudflare Account
+```bash
+wrangler login
+```
+This opens a browser window. Log in and authorize Wrangler to access your account.
+
+### 5. Clone and Deploy
+```bash
+git clone <this-repo-url> llm-worker
+cd llm-worker
+npm install
+
+# Generate a strong random API key (32+ characters) — this is what clients use
+openssl rand -hex 32
+
+# Set it as the worker secret
+wrangler secret put LLM_API_KEY
+# Paste your API key when prompted
+
+# Deploy
+wrangler deploy
+```
+
+After deploying, note the worker URL (looks like `https://llm-worker.your-subdomain.workers.dev`).
+
+### 6. Make Your First Request
+```bash
+export WORKER_BASE_URL="https://llm-worker.your-subdomain.workers.dev"
+export LLM_API_KEY="your-api-key-from-step-5"
+
+# List available models
+curl -H "Authorization: Bearer $LLM_API_KEY" "$WORKER_BASE_URL/v1/models"
+
+# Chat completion
+curl "$WORKER_BASE_URL/v1/chat/completions" \
+  -H "Authorization: Bearer $LLM_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"llama-3.3-70b","messages":[{"role":"user","content":"Hello!"}]}'
+
+# Or use the OpenAI SDK
+```
+
+### Using the OpenAI SDK
+```javascript
+import OpenAI from 'openai';
+
+const openai = new OpenAI({
+  apiKey: process.env.LLM_API_KEY,
+  baseURL: `${process.env.WORKER_BASE_URL}/v1`
+});
+
+const completion = await openai.chat.completions.create({
+  model: 'llama-3.3-70b',
+  messages: [{ role: 'user', content: 'Hello!' }]
+});
+
+const embeddings = await openai.embeddings.create({
+  model: 'bge-large',
+  input: 'Hello world'
+});
+```
+
+## Updating the API Key
+```bash
+# Change the key clients must use
+wrangler secret put LLM_API_KEY
+# Paste the new key
+# Then redeploy
+wrangler deploy
+```
+
+---
 
 ## OpenAI-Compatible Endpoints
 ```text
@@ -7,37 +100,28 @@ POST ${WORKER_BASE_URL}/v1/embeddings
 GET  ${WORKER_BASE_URL}/v1/models
 ```
 
-The worker now accepts OpenAI-style payloads for chat completions and embeddings. The legacy root `POST /` endpoint remains available for the older custom contract.
+The worker accepts OpenAI-style payloads for chat completions and embeddings. The legacy root `POST /` endpoint remains available for the older custom contract.
 
 ## Authentication
-Include your API key in the Authorization header:
+All requests must include the API key set via `wrangler secret put LLM_API_KEY`:
 ```
 Authorization: Bearer ${LLM_API_KEY}
 ```
 
-## Variables
-For a public demo repo, keep user-specific values in variables instead of inline placeholders.
-
+## Environment Variables
 ```bash
-# local helper scripts
-cp .env.example .env
+cp .env.example .env          # local helper scripts
+cp .dev.vars.example .dev.vars # local Wrangler dev secrets
 
-# local Wrangler dev secret
-cp .dev.vars.example .dev.vars
-```
-
-```bash
 export WORKER_BASE_URL="https://your-worker.your-subdomain.workers.dev"
-export LLM_API_KEY="replace-with-your-client-facing-api-key"
-export CLOUDFLARE_ACCOUNT_ID="replace-with-your-cloudflare-account-id"
-export CLOUDFLARE_API_TOKEN="replace-with-your-cloudflare-api-token"
+export LLM_API_KEY="your-client-facing-api-key"
+export CLOUDFLARE_ACCOUNT_ID="your-cloudflare-account-id"
+export CLOUDFLARE_API_TOKEN="your-cloudflare-api-token"
 ```
 
-Variable purpose:
-- `WORKER_BASE_URL`: client-side or local example code pointing at the deployed worker URL.
-- `LLM_API_KEY`: secret checked by this worker before it forwards requests to the AI binding.
-- `CLOUDFLARE_ACCOUNT_ID`: only needed for helper scripts like `fetch-schemas.js`.
-- `CLOUDFLARE_API_TOKEN`: only needed for helper scripts or CI tasks that call Cloudflare APIs directly.
+- `WORKER_BASE_URL`: deployed worker URL
+- `LLM_API_KEY`: secret checked by the worker before forwarding to AI binding
+- `CLOUDFLARE_ACCOUNT_ID` / `CLOUDFLARE_API_TOKEN`: only needed for helper scripts or CI
 
 ## OpenAI SDK Example
 
@@ -80,6 +164,7 @@ const embeddings = await openai.embeddings.create({
 - `llama-4-scout` - Meta Llama 4 Scout 17B
 - `llama-3.2-3b` - Llama 3.2 3B
 - `llama-3.2-1b` - Llama 3.2 1B
+- `llama-3.2-11b-vision` - Llama 3.2 11B Vision
 - `llama-3-8b` - Llama 3 8B
 - `llama-3.1-8b` - Llama 3.1 8B (fp8)
 - `llama-3.1-8b-awq` - Llama 3.1 8B (quantized)
@@ -96,8 +181,13 @@ const embeddings = await openai.embeddings.create({
 - `mistral-small` - Mistral Small 3.1 24B
 - `deepseek-r1` - DeepSeek R1 Distill 32B
 - `gemma-3` - Gemma 3 12B
+- `gemma-4` - Gemma 4 (26B MoE)
 - `granite-4` - IBM Granite 4.0 Micro
-- `glm-4.7-flash` - GLM-4.7-Flash (131K context, multilingual)
+- `glm-4.7-flash` - GLM-4.7-Flash
+- `glm-5.2` - GLM-5.2 (agentic coding)
+- `kimi-k2.7-code` - Kimi K2.7 Code (1T params)
+- `kimi-k2.6` - Kimi K2.6 (1T params)
+- `nemotron-3` - NVIDIA Nemotron 3 (120B MoE)
 
 ## Embeddings
 
@@ -134,6 +224,7 @@ const embeddings = await openai.embeddings.create({
 - `bge-small` - BGE Small (384-dim)
 - `bge-m3` - BGE M3 (multilingual)
 - `qwen3-embedding` - Qwen 3 Embedding
+- `plamo-embedding` - PLaMo Embedding 1B (Japanese)
 - `embedding-gemma` - EmbeddingGemma 300M
 
 ## Text-to-Image
@@ -173,7 +264,7 @@ const embeddings = await openai.embeddings.create({
 - `whisper` - OpenAI Whisper
 - `whisper-turbo` - Whisper Large v3 Turbo
 - `nova-3` - Deepgram Nova 3
-- `flux-speech` - Deepgram Flux (conversational)
+- `flux` - Deepgram Flux (conversational, voice agents)
 
 ## Text-to-Speech
 

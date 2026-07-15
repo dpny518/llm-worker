@@ -421,6 +421,7 @@ function getModelConfig(model) {
     'llama-4-scout': { id: '@cf/meta/llama-4-scout-17b-16e-instruct', type: 'text-generation', inputType: 'messages' },
     'llama-3.2-3b': { id: '@cf/meta/llama-3.2-3b-instruct', type: 'text-generation', inputType: 'messages' },
     'llama-3.2-1b': { id: '@cf/meta/llama-3.2-1b-instruct', type: 'text-generation', inputType: 'messages' },
+    'llama-3.2-11b-vision': { id: '@cf/meta/llama-3.2-11b-vision-instruct', type: 'text-generation', inputType: 'messages' },
     'llama-3-8b': { id: '@cf/meta/llama-3-8b-instruct', type: 'text-generation', inputType: 'messages' },
     'llama-3.1-8b': { id: '@cf/meta/llama-3.1-8b-instruct-fp8', type: 'text-generation', inputType: 'messages' },
     'llama-3.1-8b-awq': { id: '@cf/meta/llama-3.1-8b-instruct-awq', type: 'text-generation', inputType: 'messages' },
@@ -436,9 +437,14 @@ function getModelConfig(model) {
     'mistral-7b': { id: '@cf/mistral/mistral-7b-instruct-v0.1', type: 'text-generation', inputType: 'messages' },
     'mistral-small': { id: '@cf/mistralai/mistral-small-3.1-24b-instruct', type: 'text-generation', inputType: 'messages' },
     'deepseek-r1': { id: '@cf/deepseek-ai/deepseek-r1-distill-qwen-32b', type: 'text-generation', inputType: 'messages' },
+    'kimi-k2.7-code': { id: '@cf/moonshotai/kimi-k2.7-code', type: 'text-generation', inputType: 'messages' },
+    'kimi-k2.6': { id: '@cf/moonshotai/kimi-k2.6', type: 'text-generation', inputType: 'messages' },
+    'nemotron-3': { id: '@cf/nvidia/nemotron-3-120b-a12b', type: 'text-generation', inputType: 'messages' },
     'gemma-3': { id: '@cf/google/gemma-3-12b-it', type: 'text-generation', inputType: 'messages' },
+    'gemma-4': { id: '@cf/google/gemma-4-26b-a4b-it', type: 'text-generation', inputType: 'messages' },
     'granite-4': { id: '@cf/ibm-granite/granite-4.0-h-micro', type: 'text-generation', inputType: 'messages' },
     'glm-4.7-flash': { id: '@cf/zai-org/glm-4.7-flash', type: 'text-generation', inputType: 'messages' },
+    'glm-5.2': { id: '@cf/zai-org/glm-5.2', type: 'text-generation', inputType: 'messages' },
     'bge-large': { id: '@cf/baai/bge-large-en-v1.5', type: 'text-embeddings', inputType: 'text' },
     'bge-base': { id: '@cf/baai/bge-base-en-v1.5', type: 'text-embeddings', inputType: 'text' },
     'bge-small': { id: '@cf/baai/bge-small-en-v1.5', type: 'text-embeddings', inputType: 'text' },
@@ -601,14 +607,15 @@ function buildPayload(task, body, modelConfig) {
 function getModelList() {
   return {
     'text-generation': [
-      'llama-3.3-70b', 'llama-4-scout', 'llama-3.2-3b', 'llama-3.2-1b', 'llama-3-8b',
-      'llama-3.1-8b', 'llama-3.1-8b-awq', 'llama-3-8b-awq', 'llama-2-7b', 'llama-2-7b-int8',
+      'llama-3.3-70b', 'llama-4-scout', 'llama-3.2-3b', 'llama-3.2-1b', 'llama-3.2-11b-vision',
+      'llama-3-8b', 'llama-3.1-8b', 'llama-3.1-8b-awq', 'llama-3-8b-awq', 'llama-2-7b', 'llama-2-7b-int8',
       'llama-guard-3', 'gpt-oss-120b', 'gpt-oss-20b', 'qwen3-30b', 'qwq-32b', 'qwen2.5-coder',
-      'mistral-7b', 'mistral-small', 'deepseek-r1', 'gemma-3', 'granite-4', 'glm-4.7-flash'
+      'mistral-7b', 'mistral-small', 'deepseek-r1', 'gemma-3', 'gemma-4', 'granite-4', 'glm-4.7-flash',
+      'glm-5.2', 'kimi-k2.7-code', 'kimi-k2.6', 'nemotron-3'
     ],
-    'text-embeddings': ['bge-large', 'bge-base', 'bge-small', 'bge-m3', 'qwen3-embedding', 'embedding-gemma'],
+    'text-embeddings': ['bge-large', 'bge-base', 'bge-small', 'bge-m3', 'qwen3-embedding', 'plamo-embedding', 'embedding-gemma'],
     'text-to-image': ['flux-2-dev', 'flux-2-klein-9b', 'flux-2-klein-4b', 'flux-1-schnell', 'phoenix', 'lucid-origin', 'stable-diffusion-xl'],
-    'automatic-speech-recognition': ['whisper', 'whisper-turbo', 'nova-3'],
+    'automatic-speech-recognition': ['whisper', 'whisper-turbo', 'nova-3', 'flux'],
     'text-to-speech': ['aura-2-en', 'aura-2-es', 'aura-1', 'melotts'],
   };
 }
@@ -707,9 +714,15 @@ function getDetailedModelList() {
       { name: 'llama-4-scout', id: '@cf/meta/llama-4-scout-17b-16e-instruct', description: 'Meta Llama 4 Scout 17B', input: 'messages', output: 'text' },
       { name: 'llama-3.2-3b', id: '@cf/meta/llama-3.2-3b-instruct', description: 'Llama 3.2 3B', input: 'messages', output: 'text' },
       { name: 'llama-3.2-1b', id: '@cf/meta/llama-3.2-1b-instruct', description: 'Llama 3.2 1B', input: 'messages', output: 'text' },
+      { name: 'llama-3.2-11b-vision', id: '@cf/meta/llama-3.2-11b-vision-instruct', description: 'Llama 3.2 11B Vision', input: 'messages', output: 'text' },
       { name: 'qwq-32b', id: '@cf/qwen/qwq-32b', description: 'QwQ 32B (reasoning model)', input: 'messages', output: 'text' },
       { name: 'deepseek-r1', id: '@cf/deepseek-ai/deepseek-r1-distill-qwen-32b', description: 'DeepSeek R1 Distill 32B', input: 'messages', output: 'text' },
       { name: 'glm-4.7-flash', id: '@cf/zai-org/glm-4.7-flash', description: 'GLM-4.7-Flash', input: 'messages', output: 'text' },
+      { name: 'glm-5.2', id: '@cf/zai-org/glm-5.2', description: 'GLM-5.2 (agentic coding)', input: 'messages', output: 'text' },
+      { name: 'gemma-4', id: '@cf/google/gemma-4-26b-a4b-it', description: 'Gemma 4 (26B MoE)', input: 'messages', output: 'text' },
+      { name: 'kimi-k2.7-code', id: '@cf/moonshotai/kimi-k2.7-code', description: 'Kimi K2.7 Code (1T)', input: 'messages', output: 'text' },
+      { name: 'kimi-k2.6', id: '@cf/moonshotai/kimi-k2.6', description: 'Kimi K2.6 (1T)', input: 'messages', output: 'text' },
+      { name: 'nemotron-3', id: '@cf/nvidia/nemotron-3-120b-a12b', description: 'NVIDIA Nemotron 3 (120B MoE)', input: 'messages', output: 'text' },
     ],
     'text-embeddings': [
       { name: 'bge-large', id: '@cf/baai/bge-large-en-v1.5', description: 'BGE Large (1024-dim)', input: 'text', output: 'embeddings' },
@@ -717,6 +730,7 @@ function getDetailedModelList() {
       { name: 'bge-small', id: '@cf/baai/bge-small-en-v1.5', description: 'BGE Small (384-dim)', input: 'text', output: 'embeddings' },
       { name: 'bge-m3', id: '@cf/baai/bge-m3', description: 'BGE M3 (multilingual)', input: 'text', output: 'embeddings' },
       { name: 'qwen3-embedding', id: '@cf/qwen/qwen3-embedding-0.6b', description: 'Qwen 3 Embedding', input: 'text', output: 'embeddings' },
+      { name: 'plamo-embedding', id: '@cf/pfnet/plamo-embedding-1b', description: 'PLaMo Embedding (Japanese)', input: 'text', output: 'embeddings' },
       { name: 'embedding-gemma', id: '@cf/google/embeddinggemma-300m', description: 'EmbeddingGemma 300M', input: 'text', output: 'embeddings' },
     ],
     'text-to-image': [
@@ -729,6 +743,7 @@ function getDetailedModelList() {
       { name: 'whisper', id: '@cf/openai/whisper', description: 'OpenAI Whisper', input: 'audio', output: 'text' },
       { name: 'whisper-turbo', id: '@cf/openai/whisper-large-v3-turbo', description: 'Whisper Large v3 Turbo', input: 'audio', output: 'text' },
       { name: 'nova-3', id: '@cf/deepgram/nova-3', description: 'Deepgram Nova 3', input: 'audio', output: 'text' },
+      { name: 'flux', id: '@cf/deepgram/flux', description: 'Deepgram Flux (voice agents)', input: 'audio', output: 'text' },
     ],
     'text-to-speech': [
       { name: 'aura-2-en', id: '@cf/deepgram/aura-2-en', description: 'Deepgram Aura 2 (English)', input: 'text', output: 'audio' },
@@ -757,4 +772,6 @@ function getDetailedModelSchema(modelId) {
   }
 
   return null;
+}
+turn null;
 }
